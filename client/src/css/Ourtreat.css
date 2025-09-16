@@ -1,0 +1,66 @@
+/* Animated arrow container for centering */
+.animated-arrow-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px; /* Add spacing below the heading */
+}
+
+/* Animated arrow style */
+.animated-arrow {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-left: 5px solid white;
+  border-bottom: 5px solid white;
+  transform: rotate(-45deg); /* Initial position pointing downwards */
+  animation: arrowBounce 2s infinite;
+}
+
+/* Arrow bounce animation */
+@keyframes arrowBounce {
+  0% {
+    transform: translateY(0) rotate(-45deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-45deg); /* Moves downward */
+  }
+  100% {
+    transform: translateY(0) rotate(-45deg);
+  }
+}
+
+
+.title {
+  opacity: 0; 
+  transform: translateY(20px); 
+  animation: fadeInUp 1.5s ease-out forwards; 
+  color: white; 
+  font-size: 4rem; 
+  text-align: center; 
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Flip-box container (wraps cards) */
+.flip-boxes {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  flex-wrap: wrap; /* Ensure wrapping on smaller screens */
+  padding: 40px;
+  position: relative;
+  margin-left: 25px;
+}
+
+
+
