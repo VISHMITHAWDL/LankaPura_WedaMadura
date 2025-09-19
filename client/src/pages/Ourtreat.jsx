@@ -9,7 +9,7 @@ import diabeticImage from "../assets/diabetic.avif";
 import dengueImage from "../assets/dengue.jpg";
 import leptospirosisImage from "../assets/leptospirosis.jpg";
 import itpImage from "../assets/ITP.webp";
-import infertilityImage from "../assets/infertility.jpg";
+import infertilityImage from "../assets/Infertility.jpg";
 import covid19Image from "../assets/covid19.jpg";
 import stdImage from "../assets/STD.webp";
 import sciaticaImage from "../assets/sciatica.webp";
