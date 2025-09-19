@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import background from '../../assets/Home_Assets/Treatmentbackground.png';
-import virus from '../../assets/Home_Assets/virus.png';
+import virus from '../../assets/Home_Assets/Virus.png';
 import den from '../../assets/Home_Assets/Mosquito.png';
 
 const Treatment = () => {
