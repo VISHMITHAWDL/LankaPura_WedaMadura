@@ -12,7 +12,7 @@ import itpImage from "../assets/ITP.webp";
 import infertilityImage from "../assets/Infertility.jpg";
 import covid19Image from "../assets/covid19.jpg";
 import stdImage from "../assets/STD.webp";
-import sciaticaImage from "../assets/sciatica.webp";
+import sciaticaImage from "../assets/Sciatica.webp";
 import nsdImage from "../assets/Nervous System Diseases.jpg";
 import migraineImage from "../assets/Migraine.webp";
 import lunginfectionImage from "../assets/Lung Insfection.webp";
