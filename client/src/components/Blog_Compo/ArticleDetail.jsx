@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { Calendar, Clock, Heart } from "lucide-react";
-import img from "../../assets/Blog_Assets/profile.png";
+import img from "../../assets/Blog_Assets/Profile.png";
 import bgTexture from "../../assets/Blog_Assets/brown-textured-background-photo.jpg"; // Background image
 
 const ArticleDetail = () => {
