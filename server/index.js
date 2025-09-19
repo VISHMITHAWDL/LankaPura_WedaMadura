@@ -1,42 +1,45 @@
-import express from 'express';
-import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import appointmentRoutes from './routes/appointment.route.js';
-import blogRouts from './routes/blogRouts.js';
- 
-import productRoutes from './routes/productRoutes.js';  
+import app from './app.js';
 
-import contactusRoutes from './routes/contactus.route.js';
-import commentRoutes from './routes/commentRoutes.js';
-
+// Load environment variables
 dotenv.config();
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
+// Reusable (cached) Mongo connection for serverless cold starts
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error('MONGODB_URI is not defined');
+    return;
+  }
+  try {
+    await mongoose.connect(uri, {
+      // Add any needed options here
+    });
+    isConnected = true;
     console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.log(error);
+  } catch (err) {
+    console.error('Mongo connection error:', err.message);
+  }
+}
+
+// Local development: start an HTTP server
+if (!process.env.VERCEL) {
+  const port = process.env.PORT || 4000;
+  connectDB().then(() => {
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
   });
+}
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Serverless export for Vercel (@vercel/node) – every request hits this handler
+export default async function handler(req, res) {
+  await connectDB();
+  return app(req, res);
+}
 
- 
-
-
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/blogs', blogRouts);
-app.use('/api/contactus', contactusRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/comments', commentRoutes);
-
-
-app.listen(process.env.PORT,() =>{
-    console.log(`Server running on port ${process.env.PORT}`);
-});
 
 

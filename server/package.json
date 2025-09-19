@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "devStart": "nodemon --env-file=.env index.js",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "vercel-build": "echo 'Nothing to build for server (pure Node API)'"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +27,6 @@
     "mongoose": "^8.10.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.9",
-    "path": "^0.12.7",
-    "server": "file:"
+    "path": "^0.12.7"
   }
 }
