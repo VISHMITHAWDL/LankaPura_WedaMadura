@@ -19,8 +19,8 @@ This is caused by npm occasionally skipping an optional native Rollup binary whe
 Try one of these (in order):
 1. Trigger a fresh deployment (Vercel dashboard -> Deployments -> Redeploy).
 2. Clear Vercel build cache (Redeploy with “Clear cache”).
-3. Add an environment variable in Vercel project settings:
-	- `ROLLUP_SKIP_NODEJS_NATIVE=1` (forces pure JS fallback).
+3. Ensure environment variable is set (now in `vercel.json` already):
+	- `ROLLUP_SKIP_NODEJS_NATIVE=1` (forces pure JS implementation of Rollup, bypassing missing native binary).
 4. As a last resort, pin Vite to the latest patch and reinstall locally, commit the updated lockfile, then redeploy.
 
 ### Local Development
