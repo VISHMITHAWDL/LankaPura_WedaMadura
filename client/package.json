@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +19,6 @@
     "@mui/icons-material": "^6.3.1",
     "@react-google-maps/api": "^2.20.3",
     "axios": "^1.7.9",
-    "client": "file:",
     "date-fns": "^4.1.0",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.2",
