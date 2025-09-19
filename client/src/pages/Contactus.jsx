@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "../assets/Contact_Assets/CONTACT.jpg";
 import RightImage from "../assets/Home_Assets/sam/5.jpg";
-import stupa from "../assets/Contact_Assets/stupa.jpg";
+import stupa from "../assets/Contact_Assets/Stupa.jpg";
 
 const Contactus = () => {
   const treatmentHoursRef = useRef(null);
