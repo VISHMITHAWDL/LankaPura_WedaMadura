@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/Sameemadhu16/LankaPura_WedaMadura/issues"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "homepage": "https://github.com/Sameemadhu16/LankaPura_WedaMadura#readme"
 }
+
