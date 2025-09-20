@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import proback from '../../assets/Produt_Assets/proback.jpg'; 
-import {
-  FaStar,
-  FaExpand,
-  FaShoppingCart,
-  FaHeart,
-  FaCheck,
-  FaArrowRight,
-  FaArrowLeft
-} from 'react-icons/fa';
+import { FaExpand, FaShoppingCart, FaCheck, FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { ProductAPI } from '../../api/client';
 
 const ProductDescription = () => {
   const { id } = useParams();
@@ -19,28 +11,28 @@ const ProductDescription = () => {
   const [product, setProduct] = useState({});
   const [allProducts, setAllProducts] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
-    const fetchProduct = async () => {
+    let ignore = false;
+    async function run() {
+      setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/api/products/productdetails/${id}`);
-        setProduct(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error fetching product:', error);
+        const [p, list] = await Promise.all([
+          ProductAPI.get(id),
+          ProductAPI.list()
+        ]);
+        if (ignore) return;
+        setProduct(p || {});
+        setAllProducts(Array.isArray(list) ? list : []);
+      } catch (err) {
+        if (!ignore) setError(err.message || 'Failed to load product');
+      } finally {
+        if (!ignore) setLoading(false);
       }
-    };
-
-    const fetchAllProducts = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/products/allproducts');
-        setAllProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching product list:', error);
-      }
-    };
-
-    fetchProduct();
-    fetchAllProducts();
+    }
+    run();
+    return () => { ignore = true; };
   }, [id]);
 
   const productIds = allProducts.map(p => p._id);
@@ -67,7 +59,10 @@ const ProductDescription = () => {
 
       {/* Product Section */}
       <div className="flex flex-col md:flex-row w-full max-w-7xl p-6 gap-8 my-12 bg-gradient-to-br from-white to-gray-50 shadow-xl rounded-xl border border-gray-100">
-
+        {loading && <div className="w-full text-center py-10">Loading product...</div>}
+        {error && <div className="w-full text-center py-10 text-red-600">{error}</div>}
+        {!loading && !error && (
+          <>
         {/* Product Image */}
         <div className="w-full md:w-2/5 flex-shrink-0">
           <div className="relative group overflow-hidden rounded-xl bg-white p-4 shadow-md">
@@ -140,6 +135,8 @@ const ProductDescription = () => {
             </button>
           </div>
         </div>
+          </>
+        )}
       </div>
 
       {/* Navigation Arrows */}

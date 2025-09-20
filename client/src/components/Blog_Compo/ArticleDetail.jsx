@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { BlogAPI } from "../../api/client";
 import { format } from "date-fns";
 import { Calendar, Clock, Heart } from "lucide-react";
 import img from "../../assets/Blog_Assets/Profile.png";
@@ -21,24 +22,12 @@ const ArticleDetail = () => {
 
     console.log("Fetching article with ID:", id);
 
-    fetch(`http://localhost:3000/api/blogs/blogdetails/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
+    BlogAPI.get(id)
       .then((data) => {
-        console.log("Fetched article data:", data);
-        if (!data) {
-          throw new Error("Article not found");
-        }
+        if (!data) throw new Error('Article not found');
         setArticle(data);
       })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-        setError(error.message);
-      })
+      .catch((err) => setError(err.message || 'Failed to load article'))
       .finally(() => setLoading(false));
   }, [id]);
 

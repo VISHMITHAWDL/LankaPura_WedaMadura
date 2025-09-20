@@ -1,19 +1,29 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { BlogAPI } from "../../api/client";
 
 const Cards = () => {
   const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/blogs/allblogs") // Updated API URL
-      .then((response) => response.json())
+    let ignore = false;
+    BlogAPI.list()
       .then((data) => {
-        console.log("Fetched articles:", data); // Assuming the response directly gives the articles
-        setArticles(data);
+        if (!ignore) setArticles(Array.isArray(data) ? data : []);
       })
-      .catch((error) => console.error("Error fetching articles:", error));
+      .catch((err) => {
+        if (!ignore) setError(err.message || 'Failed to load blogs');
+      })
+      .finally(() => { if (!ignore) setLoading(false); });
+    return () => { ignore = true; };
   }, []);
+
+  if (loading) return <div className="p-6 text-center">Loading blogs...</div>;
+  if (error) return <div className="p-6 text-center text-red-600">{error}</div>;
+  if (!articles.length) return <div className="p-6 text-center">No blog articles available.</div>;
 
   return (
     <div className="container p-6 mx-auto">

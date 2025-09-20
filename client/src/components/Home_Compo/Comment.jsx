@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { CommentAPI } from '../../api/client';
 
 const AyurvedaTwoColumnCommentSection = () => {
   const [comments, setComments] = useState([]);
@@ -7,11 +8,15 @@ const AyurvedaTwoColumnCommentSection = () => {
   const [email, setEmail] = useState("");
   const [currentCommentIndex, setCurrentCommentIndex] = useState(0);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
-    fetch("http://localhost:3000/api/comments/allcomments")
-      .then((res) => res.json())
-      .then((data) => setComments(data))
-      .catch((err) => console.error("Error fetching comments:", err));
+    let ignore = false;
+    CommentAPI.listForBlog('allcomments') // backend route may differ; adjust if needed
+      .then((data) => { if (!ignore) setComments(Array.isArray(data) ? data : []); })
+      .catch((err) => { if (!ignore) setError(err.message || 'Failed to load comments'); })
+      .finally(() => { if (!ignore) setLoading(false); });
+    return () => { ignore = true; };
   }, []);
 
   useEffect(() => {
@@ -27,23 +32,11 @@ const AyurvedaTwoColumnCommentSection = () => {
     e.preventDefault();
     if (newComment.trim() && userName.trim()) {
       try {
-        const response = await fetch("http://localhost:3000/api/comments/addcomment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: userName,
-            email: email,
-            text: newComment,
-          }),
-        });
-
-        if (response.ok) {
-          const savedComment = await response.json();
-          setComments([...comments, savedComment]);
-          setNewComment("");
-          setUserName("");
-          setEmail("");
-        }
+        const savedComment = await CommentAPI.create({ name: userName, email, text: newComment });
+        setComments([...comments, savedComment]);
+        setNewComment("");
+        setUserName("");
+        setEmail("");
       } catch (error) {
         console.error("Error submitting comment:", error);
       }
@@ -82,7 +75,9 @@ const AyurvedaTwoColumnCommentSection = () => {
             What Our Patients Say
           </h3>
 
-          {comments.length > 0 && (
+          {loading && <div className="text-center">Loading comments...</div>}
+          {error && <div className="text-center text-red-600">{error}</div>}
+          {!loading && !error && comments.length > 0 && (
             <div className="flex-grow relative">
               <div className="absolute inset-0 flex flex-col justify-center">
                 <div className="bg-white p-8 rounded-lg shadow-md border-l-4 border-green-600 relative">

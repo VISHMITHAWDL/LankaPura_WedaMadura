@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { ProductAPI } from "../api/client";
 import landing from "../assets/Home_Assets/landing_banneri.jpg";
 import { useNavigate } from "react-router-dom";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Importing star icons
@@ -7,11 +8,15 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
-    fetch("http://localhost:3000/api/products/allproducts")
-      .then((response) => response.json())
-      .then((data) => setProducts(data))
-      .catch((error) => console.error("Error fetching products:", error));
+    let ignore = false;
+    ProductAPI.list()
+      .then((data) => { if (!ignore) setProducts(Array.isArray(data) ? data : []); })
+      .catch((err) => { if (!ignore) setError(err.message || 'Failed to load products'); })
+      .finally(() => { if (!ignore) setLoading(false); });
+    return () => { ignore = true; };
   }, []);
 
   const handleLearnMore = (id) => {
@@ -53,7 +58,10 @@ const Products = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 mt-7">
-        {products.map((product) => (
+        {loading && <div className="col-span-full text-center">Loading products...</div>}
+        {error && <div className="col-span-full text-center text-red-600">{error}</div>}
+        {!loading && !error && !products.length && <div className="col-span-full text-center">No products available.</div>}
+        {!loading && !error && products.map((product) => (
           <div
             key={product._id}
             className="bg-white shadow-lg rounded-2xl p-4 relative transition-transform duration-300 hover:scale-105 hover:shadow-2xl"

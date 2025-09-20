@@ -61,3 +61,57 @@ npm install vite@latest --save-dev
 ```
 Keep `.npmrc` without `optional=false`, and you may remove the explicit `rollup` devDependency once stable.
 
+
+## Frontend ↔ Backend API Integration
+
+### Environment Variables (Vite Frontend)
+Create environment files inside `client/` (add them to `.gitignore` if not already):
+
+`client/.env.development`
+```
+VITE_API_BASE=http://localhost:3000
+```
+
+`client/.env.production`
+```
+VITE_API_BASE=https://lanka-pura-weda-madura-g8of.vercel.app
+```
+
+### Central API Helper
+`client/src/api/client.js` exports:
+* `apiFetch(path, options)` – generic wrapper
+* `BlogAPI`, `AppointmentAPI`, `ContactAPI`, `ProductAPI`
+
+### Backend Endpoints
+| Purpose | Method | Path |
+|---------|--------|------|
+| Health | GET | `/` |
+| Blogs list | GET | `/api/blogs/allblogs` |
+| Blog single | GET | `/api/blogs/blogdetails/:id` |
+| Products list | GET | `/api/products/allproducts` |
+| Product single | GET | `/api/products/productdetails/:id` |
+| Appointment create | POST | `/api/appointments/createAppointment` |
+| Contact create | POST | `/api/contactus/createContact` |
+
+### Usage Example
+```js
+import { BlogAPI } from './src/api/client';
+const blogs = await BlogAPI.list();
+```
+
+### Error Handling
+All helpers throw an Error with `status` + `data` fields on non-2xx:
+```js
+try { await AppointmentAPI.create(formData); } catch (e) { console.error(e.status, e.message); }
+```
+
+### CORS Note
+If you restrict origins server-side, include `http://localhost:5173` and your production frontend domain.
+
+### Optional Improvement
+Add in `server/routes/BlogRouts.js`:
+```js
+router.get('/', blogController.getAllArticles);
+```
+so `/api/blogs` returns the list (alias to `/allblogs`).
+

@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { AppointmentAPI } from "../api/client";
 import { Calendar, Clock } from "lucide-react";
 import landing from "../assets/Home_Assets/landing_banneri.jpg";
 
@@ -71,38 +72,21 @@ const AppointmentForm = () => {
     setFormData({ ...formData, timeSlot: slot });
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.timeSlot) {
-      alert("Please select a time slot!");
-      return;
-    }
+    if (!formData.timeSlot) return alert("Please select a time slot!");
+    setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/appointments/createAppointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Appointment Data:", data);
-        alert("Appointment booked successfully!");
-        setFormData({
-          name: "",
-          age: "",
-          village: "",
-          date: "",
-          timeSlot: "",
-          disease: "",
-        });
-      } else {
-        alert("There was an error booking the appointment!");
-      }
-    } catch (error) {
-      console.error("There was an error booking the appointment!", error);
-      alert("There was an error booking the appointment!");
+      const data = await AppointmentAPI.create(formData);
+      console.log("Appointment Data:", data);
+      alert("Appointment booked successfully!");
+      setFormData({ name: "", age: "", village: "", date: "", timeSlot: "", disease: "" });
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "There was an error booking the appointment!");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -261,10 +245,11 @@ const AppointmentForm = () => {
             <div className="mt-8">
               <button
                 type="submit"
-                className="w-full bg-green-700 hover:bg-green-800 text-white font-medium py-3 px-4 rounded-lg transition flex items-center justify-center"
+                disabled={submitting}
+                className="w-full bg-green-700 disabled:opacity-60 hover:bg-green-800 text-white font-medium py-3 px-4 rounded-lg transition flex items-center justify-center"
               >
                 <Calendar className="w-5 h-5 mr-2" />
-                Book Appointment
+                {submitting ? 'Booking...' : 'Book Appointment'}
               </button>
             </div>
           </form>

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ContactAPI } from "../api/client";
 import Image from "../assets/Contact_Assets/CONTACT.jpg";
 import RightImage from "../assets/Home_Assets/sam/5.jpg";
 import stupa from "../assets/Contact_Assets/Stupa.jpg";
@@ -17,26 +18,14 @@ const Contactus = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in-up");
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (treatmentHoursRef.current) {
-      observer.observe(treatmentHoursRef.current);
-    }
-
-    return () => {
-      if (treatmentHoursRef.current) {
-        observer.unobserve(treatmentHoursRef.current);
-      }
-    };
+    const node = treatmentHoursRef.current;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("animate-fade-in-up");
+      });
+    }, { threshold: 0.1 });
+    if (node) observer.observe(node);
+    return () => { if (node) observer.unobserve(node); };
   }, []);
 
   const handleInputChange = (e) => {
@@ -53,42 +42,24 @@ const Contactus = () => {
     return newErrors;
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+    if (Object.keys(newErrors).length) { setErrors(newErrors); return; }
+    setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3000/api/contactus/createContact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log("ContactUs data:", data);
-      alert("Create contact successfully!");
-      setFormData({
-        fullname: "",
-        email: "",
-        contactNumber: "",
-        country: "",
-        message: "",
-      });
+      const payload = { ...formData };
+      const data = await ContactAPI.create(payload);
+      console.log('Contact created:', data);
+      alert('Message sent successfully!');
+      setFormData({ fullname: "", email: "", contactNumber: "", country: "", message: "" });
       setErrors({});
-    } catch (error) {
-      console.error("There was an error in contact!", error);
-      alert("There was an error in contact!");
+    } catch (err) {
+      console.error(err);
+      alert(err.message || 'There was an error sending your message');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -172,9 +143,10 @@ const Contactus = () => {
 
             <button 
               type='submit' 
-              className="w-full bg-yellow-600 font-[Raleway] text-white py-3 rounded-md text-lg font-semibold hover:bg-yellow-700 transition duration-300 shadow-md"
+              disabled={submitting}
+              className="w-full bg-yellow-600 disabled:opacity-60 font-[Raleway] text-white py-3 rounded-md text-lg font-semibold hover:bg-yellow-700 transition duration-300 shadow-md"
             >
-              Send Message
+              {submitting ? 'Sending...' : 'Send Message'}
             </button>
           </form>
         </div>
@@ -294,7 +266,7 @@ const Contactus = () => {
       </div>
 
       {/* Custom Styles */}
-      <style jsx>{`
+  <style>{`
         .hero-section {
           position: relative;
           width: 100%;
