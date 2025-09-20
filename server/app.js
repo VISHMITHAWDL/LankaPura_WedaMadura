@@ -12,6 +12,13 @@ import commentRoutes from './routes/commentRoutes.js';
 const app = express();
 app.use(cors());
 app.use(express.json());
+// Allow URL-encoded form submissions if needed
+app.use(express.urlencoded({ extended: true }));
+
+// Basic health check / root route so Vercel "GET /" isn't a 404
+app.get('/', (req, res) => {
+	res.json({ status: 'ok', service: 'lankapura-api' });
+});
 
 // Mount routes (keep existing /api prefix so frontend URLs stay the same)
 app.use('/api/appointments', appointmentRoutes);
